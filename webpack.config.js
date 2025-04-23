@@ -4,56 +4,84 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const outputDirectory = 'build';
 
 module.exports = {
-  entry: ['babel-polyfill', './src/client/index.js'],
+  entry: './src/client/index.js', // Removed babel-polyfill as it's no longer needed
   output: {
     path: path.join(__dirname, outputDirectory),
-    filename: 'bundle.js'
+    filename: 'bundle.js',
+    publicPath: '/'
   },
   module: {
-    rules: [{
-      test: /\.(js|jsx)$/,
-      exclude: /node_modules/,
-      use: {
-        loader: 'babel-loader'
-      }
-    },
-    {
-      test: /\.sass|scss$/,
-      use: [
-        'style-loader',
-        {
-          loader: 'css-loader',
+    rules: [
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
           options: {
-            modules: true,
-            localIdentName: '[local]--[hash:base64:5]',
+            presets: [
+              '@babel/preset-env',
+              '@babel/preset-react'
+            ],
+            plugins: [
+              '@babel/plugin-proposal-class-properties'
+            ]
+          }
+        }
+      },
+      {
+        test: /\.(sass|scss)$/,
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              modules: {
+                mode: 'local',
+                localIdentName: '[local]--[hash:base64:5]',
+              },
+            },
           },
-        },
-        'resolve-url-loader',
-        {
-          loader: 'sass-loader',
-          options: {
-            sourceMap: true,
-            sourceMapContents: false,
+          'resolve-url-loader',
+          {
+            loader: 'sass-loader',
+            options: {
+              sourceMap: true,
+            },
           },
-        },
-      ],
-    },
-    {
-      test: /\.(png|woff|woff2|eot|ttf)$/,
-      loader: 'url-loader?limit=100000'
-    },
-    {
-      test: /.svg$/,
-      use: ['@svgr/webpack'],
-    },
+        ],
+      },
+      {
+        test: /\.(png|woff|woff2|eot|ttf)$/,
+        type: 'asset/resource', // Replaced url-loader with Webpack 5 asset modules
+        generator: {
+          filename: 'assets/[hash][ext][query]'
+        }
+      },
+      {
+        test: /\.svg$/,
+        use: ['@svgr/webpack'],
+      },
     ]
   },
   resolve: {
-    extensions: ['*', '.js', '.jsx']
+    extensions: ['*', '.js', '.jsx'],
+    fallback: { // Add necessary polyfills for Electron
+      path: require.resolve('path-browserify'),
+      url: require.resolve('url/')
+    }
   },
   devServer: {
     port: 3000,
     open: false,
+    allowedHosts: 'all',
+    historyApiFallback: true,
+    hot: true,
+    client: {
+      overlay: {
+        errors: true,
+        warnings: false,
+      },
+    },
   },
   target: 'electron-renderer',
   plugins: [
