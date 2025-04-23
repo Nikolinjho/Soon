@@ -5,3 +5,5 @@ dist
 yarn.lock
 build/bundle.js
 build/index.html
+.history
+.DS_Store
