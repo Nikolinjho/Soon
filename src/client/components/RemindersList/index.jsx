@@ -161,7 +161,7 @@ class RemindersList extends React.Component {
                 <button
                   type="button"
                   className={styles.refresh}
-                  onMouseDown={e => this.toggleSelectedId(e, id)}
+                  onMouseDown={(e) => this.toggleSelectedId(e, id)}
                 >
                   <Refresh />
                 </button>
@@ -190,7 +190,7 @@ class RemindersList extends React.Component {
                     : (
                       <input
                         ref={this.repeatWhen}
-                        placeholder="When to repeat?"
+                        placeholder="Когда повторить?"
                         className={classnames(
                           styles.repeatWhen,
                           shake ? styles.shake : ''
@@ -210,11 +210,10 @@ class RemindersList extends React.Component {
 
     return (
       <div>
-        No active or expired reminders
+        Нет активных или прошедших напоминаний
       </div>
     );
   };
-
 
   render() {
     const { reminders, darkMode } = this.props;

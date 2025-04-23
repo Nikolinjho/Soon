@@ -121,7 +121,7 @@ class AddReminder extends React.Component {
           name="message"
           onChange={this.handleInputChange}
           onKeyUp={this.focusNextField}
-          placeholder="What to remind?"
+          placeholder="Что напомнить?"
           maxLength={50}
         />
         <div className={styles.separator} />
@@ -134,7 +134,7 @@ class AddReminder extends React.Component {
           name="time"
           onChange={this.handleInputChange}
           onKeyUp={this.addNotification}
-          placeholder="When?"
+          placeholder="Когда?"
         />
         <span
           className={classnames(

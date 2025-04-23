@@ -137,7 +137,7 @@ class App extends React.Component {
                     className={styles.removeButton}
                     onClick={() => this.deleteItem('all')}
                   >
-                    {`Remove All ( ${this.getNumberOfReminders('all')} )`}
+                    {`Удалить все ( ${this.getNumberOfReminders('all')} )`}
                   </button>
                   <button
                     type="button"
@@ -147,7 +147,7 @@ class App extends React.Component {
                     )}
                     onClick={() => this.deleteItem('expired')}
                   >
-                    {`Remove Expired ( ${this.getNumberOfReminders('expired')} )`}
+                    {`Удал. истекшие ( ${this.getNumberOfReminders('expired')} )`}
                   </button>
                 </div>
                 )}
