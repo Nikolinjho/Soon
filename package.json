@@ -7,9 +7,9 @@
   "author": "Dogacan Bilgili",
   "license": "GNU",
   "scripts": {
-    "start": "electron .",
-    "dev": "webpack serve --mode development & electron .",
-    "build": "webpack --mode production",
+    "server": "electron .",
+    "client": "NODE_ENV=development webpack serve --mode development",
+    "build": "NODE_ENV=production webpack",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "postinstall": "electron-builder install-app-deps"
@@ -44,9 +44,9 @@
     "eslint-plugin-react": "^7.27.1",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.5.0",
-    "node-sass": "^7.0.0",
     "path-browserify": "^1.0.1",
     "resolve-url-loader": "^5.0.0",
+    "sass": "^1.87.0",
     "sass-loader": "^12.4.0",
     "style-loader": "^3.3.1",
     "stylelint": "^14.1.0",
