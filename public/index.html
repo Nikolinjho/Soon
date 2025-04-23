@@ -2,50 +2,55 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <style>
-        @font-face {
-            font-family: "bp";
-            font-weight: 400;
-            src: url("../fonts/bp-regular.woff2") format("woff2");
-        }
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+    rel="stylesheet">
 
-          #root {
-            border-radius: 5px;
-            overflow: hidden;
-            transform: translateY(12px);
-          }
+  <style>
+    @font-face {
+      font-family: "Inter";
+      font-weight: 400;
+    }
 
-          #arrow {
-            position: fixed;
-            z-index: 1;
-          }
+    #root {
+      border-radius: 5px;
+      overflow: hidden;
+      transform: translateY(12px);
+    }
 
-          #arrow:before {
-            border-color: transparent transparent white transparent;
-            border-style: solid;
-            border-width: 0 8px 12px 8px;
-            content: "";
-            height: 0;
-            left: 50%;
-            position: fixed;
-            top: 0px;
-            transform: translateX(-50%);
-            width: 0;
-          }
+    #arrow {
+      position: fixed;
+      z-index: 1;
+    }
 
-          .darkMode:before {
-            border-color: transparent transparent #363636 transparent !important;
-          }
-    </style>
+    #arrow:before {
+      border-color: transparent transparent white transparent;
+      border-style: solid;
+      border-width: 0 8px 12px 8px;
+      content: "";
+      height: 0;
+      left: 50%;
+      position: fixed;
+      top: 0px;
+      transform: translateX(-50%);
+      width: 0;
+    }
+
+    .darkMode:before {
+      border-color: transparent transparent #363636 transparent !important;
+    }
+  </style>
 </head>
 
 <body>
-    <div id="arrow" class="darkMode"></div>
-    <div id="root"></div>
+  <div id="arrow" class="darkMode"></div>
+  <div id="root"></div>
 </body>
 
 </html>
