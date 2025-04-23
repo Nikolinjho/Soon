@@ -1,14 +1,12 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const outputDirectory = 'build';
-
 module.exports = {
-  entry: './src/client/index.js', // Removed babel-polyfill as it's no longer needed
+  entry: './src/client/index.js',
   output: {
-    path: path.join(__dirname, outputDirectory),
+    path: path.join(__dirname, 'build'),
     filename: 'bundle.js',
-    publicPath: '/'
+    publicPath: './'
   },
   module: {
     rules: [
