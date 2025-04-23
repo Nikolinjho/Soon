@@ -7,10 +7,11 @@
   "author": "Dogacan Bilgili",
   "license": "GNU",
   "scripts": {
+    "start": "electron .",
+    "dev": "webpack serve --mode development & electron .",
     "build": "webpack --mode production",
-    "client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
-    "server": "electron .",
-    "dist": "npm run build && electron-builder",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
