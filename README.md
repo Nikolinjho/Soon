@@ -33,3 +33,15 @@ Some input examples for duration (Only integers are valid as a number).
 30seconds
 Every 10 min
 ```
+
+## Разработка
+
+`npm run dev` - запускает приложение для локальной разработки.
+
+`npm run dev` - сборка приложения для продакшена.
+
+`npm run start` - запускает электрон сервер.
+
+`npm run pack` - сборка приложения (без инсталлера) для проверки работоспособности.
+
+`npm run dist` - полноценная сборка приложения с инсталлерами и необходимыми файлами.
