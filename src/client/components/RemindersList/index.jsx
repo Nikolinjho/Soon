@@ -23,16 +23,6 @@ class RemindersList extends React.Component {
     this.shakeTimeout = null;
   }
 
-  componentWillMount() {
-    ipcRenderer.removeListener('REPEAT_FAILED', () => {
-      this.setShake();
-    });
-
-    ipcRenderer.removeListener('NOTIFICATION_ADDED', () => {
-      this.setState({ selectedId: -1 });
-    });
-  }
-
   componentDidMount() {
     ipcRenderer.on('REPEAT_FAILED', () => {
       this.setShake();
@@ -49,6 +39,16 @@ class RemindersList extends React.Component {
     if (selectedId !== -1) {
       this.repeatWhen.current.focus();
     }
+  }
+
+  componentWillUnmount() {
+    ipcRenderer.removeListener('REPEAT_FAILED', () => {
+      this.setShake();
+    });
+
+    ipcRenderer.removeListener('NOTIFICATION_ADDED', () => {
+      this.setState({ selectedId: -1 });
+    });
   }
 
   setShake = () => {
