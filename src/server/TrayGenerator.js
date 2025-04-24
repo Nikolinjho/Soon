@@ -1,6 +1,9 @@
 /* eslint-disable import/no-extraneous-dependencies */
-const { app, Tray, Menu } = require('electron');
-const path = require('path');
+import { app, Tray, Menu } from 'electron';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 class TrayGenerator {
   constructor(mainWindow, store) {
@@ -20,9 +23,10 @@ class TrayGenerator {
   showWindow = () => {
     const position = this.getWindowPosition();
     this.mainWindow.setPosition(position.x, position.y, false);
-    this.mainWindow.setVisibleOnAllWorkspaces(true);
+    // this.mainWindow.setVisibleOnAllWorkspaces(true);
     this.mainWindow.show();
-    this.mainWindow.setVisibleOnAllWorkspaces(false);
+    this.mainWindow.focus();
+    // this.mainWindow.setVisibleOnAllWorkspaces(false);
   };
 
   toggleWindow = () => {
@@ -75,4 +79,4 @@ class TrayGenerator {
   };
 }
 
-module.exports = TrayGenerator;
+export { TrayGenerator };

@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
 // eslint-disable-next-line import/no-extraneous-dependencies
-const { Notification } = require('electron');
+import { Notification } from 'electron';
 
 class NotificationHandler {
   constructor(mainWindow, store) {
@@ -189,4 +189,4 @@ class NotificationHandler {
   }
 }
 
-module.exports = NotificationHandler;
+export { NotificationHandler as Notification };

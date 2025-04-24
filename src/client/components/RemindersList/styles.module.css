@@ -1,0 +1,152 @@
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  8%, 41% {
+    transform: translateX(-7px);
+  }
+  25%, 58% {
+    transform: translateX(7px);
+  }
+  75% {
+    transform: translateX(-2px);
+  }
+  92% {
+    transform: translateX(2px);
+  }
+}
+
+
+.remindersList {
+  font-size: 15px;
+  height: 78px;
+  line-height: 13px;
+  margin-left: 16px;
+  margin-right: auto;
+  margin-top: 25px;
+  overflow-y: scroll;
+  position: relative;
+  width: calc(100% - 32px);
+
+  &::after {
+    content: '';
+    height: 5px;
+    left: 0;
+    position: sticky;
+    top: 0;
+    width: 100%;
+  }
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &.noReminder {
+    color: rgba(#363636, 0.7);
+    font-size: 17px;
+    height: 100%;
+    line-height: 120px;
+    margin-left: 0;
+    text-align: center;
+    width: 100%;
+  }
+
+  .reminder {
+    align-items: center;
+    display: flex;
+    margin-bottom: 7px;
+
+    .message {
+      color: #363636;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      .repeatWhen {
+        color: #363636;
+        font-size: inherit;
+        height: 16px;
+        text-align: left;
+
+        &.shake {
+          animation: shake 0.5s linear;
+        }
+      }
+    }
+
+    &.expired {
+      text-decoration: line-through;
+
+      .message {
+        color: rgba(#363636, 0.4);
+
+        span {
+          color: #363636;
+          opacity: 0.4;
+        }
+      }
+    }
+
+    svg {
+      border: 1px solid #ff5454;
+      border-radius: 50%;
+      fill: #ff5454;
+      height: 17px;
+      margin-right: 5px;
+      padding: 2px;
+      width: 17px;
+    }
+
+    .refresh {
+      svg {
+        border-color: #2BC0A1;
+        fill: #2BC0A1;
+      }
+    }
+  }
+
+  &.darkMode {
+    &.noReminder {
+      color: rgba(white, 0.5);
+    }
+
+    .reminder {
+      svg {
+        border: 1px solid #ff816b;
+        fill: #ff816b;
+      }
+
+      .refresh {
+        svg {
+          border-color: #57f7d6;
+          fill: #57f7d6;
+        }
+      }
+
+      .message {
+        color: white;
+
+        .repeatWhen {
+          color: white;
+        }
+
+        span {
+          color: white;
+        }
+      }
+
+      &.expired {
+        color: white;
+
+        .message {
+          color: rgba(white, 0.4);
+
+          span {
+            color: white;
+            opacity: 0.5;
+          }
+        }
+      }
+    }
+  }
+}

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-import styles from './styles.sass';
+import styles from './styles.module.css';
 
 const { ipcRenderer } = window.require('electron');
 

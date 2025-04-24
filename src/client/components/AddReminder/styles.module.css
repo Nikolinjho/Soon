@@ -1,0 +1,92 @@
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  8%, 41% {
+    transform: translateX(-7px);
+  }
+  25%, 58% {
+    transform: translateX(7px);
+  }
+  75% {
+    transform: translateX(-2px);
+  }
+  92% {
+    transform: translateX(2px);
+  }
+}
+
+
+.addReminder {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transform: translateY(-5px);
+  width: 100%;
+
+  .statusMessage {
+    bottom: -20px;
+    color: #2BC0A1;
+    font-size: 12px;
+    font-weight: 400;
+    left: 50%;
+    opacity: 0;
+    position: absolute;
+    transform: translateY(10px) translateX(-50%);
+
+    &.enter {
+      opacity: 1;
+      transform: translateY(5px) translateX(-50%);
+      transition: 0.2s linear;
+      transition-property: opacity, transform;
+    }
+  }
+
+  input {
+    color: #363636;
+    width: 80%;
+
+    &::placeholder {
+      color: rgba(#363636, 0.5);
+    }
+
+    &:first-of-type {
+      margin-bottom: 4px;
+    }
+
+    &:last-of-type {
+      margin-top: 4px;
+    }
+  }
+
+  .timeInput {
+    &.shake {
+      animation: shake 0.5s linear;
+    }
+  }
+
+  .separator {
+    background-color: #bebebe;
+    height: 1px;
+    width: 80%;
+  }
+
+  &.darkMode {
+    input {
+      color: white;
+
+      &::placeholder {
+        color: rgba(white, 0.5);
+      }
+    }
+
+    .separator {
+      background-color: rgba(#bebebe, 0.2);
+    }
+
+    .statusMessage {
+      color: #57f7d6;
+    }
+  }
+}

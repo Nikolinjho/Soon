@@ -1,19 +1,26 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-extraneous-dependencies */
 // eslint-disable-next-line import/no-extraneous-dependencies
-const {
+import {
   app,
   BrowserWindow,
   ipcMain,
-  globalShortcut
-} = require('electron');
-const { is } = require('electron-util');
-const Store = require('electron-store');
-const path = require('path');
-const { NSEventMonitor, NSEventMask } = require('nseventmonitor');
-const TrayGenerator = require('./TrayGenerator');
+  globalShortcut,
+  powerMonitor,
+} from 'electron';
+import { fileURLToPath } from 'url';
+import Store from 'electron-store';
+import path  from 'path';
+import nseventmonitorpackage from 'nseventmonitor';
+import {TrayGenerator} from './TrayGenerator.js';
 
-const Notification = require('./Notification');
+import {Notification} from './Notification.js';
+
+const { NSEventMonitor, NSEventMask }  = nseventmonitorpackage
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const isDev = process.env.NODE_ENV === 'development'
 
 const gotTheLock = app.requestSingleInstanceLock();
 
@@ -51,7 +58,7 @@ const createMainWindow = () => {
     fullscreenable: false,
     resizable: false,
     webPreferences: {
-      devTools: is.development,
+      devTools: isDev,
       backgroundThrottling: false,
       nodeIntegration: true,
       contextIsolation: false,
@@ -59,12 +66,13 @@ const createMainWindow = () => {
     }
   });
 
-  if (is.development) {
+  if (isDev) {
     mainWindow.webContents.openDevTools({ mode: 'detach' });
     mainWindow.loadURL('http://localhost:3000');
   } else {
     mainWindow.loadURL(`file://${path.join(__dirname, '../../build/index.html')}`);
   }
+
 
   mainWindow.on('focus', () => {
     globalShortcut.register('Command+R', () => null);
@@ -97,7 +105,7 @@ if (!gotTheLock) {
   app.quit();
 } else {
   app.on('ready', () => {
-    const { powerMonitor } = require('electron');
+
 
     initStore();
     createMainWindow();
@@ -154,7 +162,7 @@ if (!gotTheLock) {
     }
   });
 
-  if (!is.development) {
+  if (!isDev) {
     app.setLoginItemSettings({
       openAtLogin: store.get('launchAtStart'),
     });

@@ -6,7 +6,7 @@ import RemindersList from '../RemindersList';
 import Back from '../../assets/icons/back.svg';
 import MoreIcon from '../../assets/icons/more.svg';
 
-import styles from './styles.sass';
+import styles from './styles.module.css';
 
 const { ipcRenderer } = window.require('electron');
 

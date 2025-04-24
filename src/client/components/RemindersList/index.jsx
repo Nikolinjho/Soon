@@ -7,7 +7,7 @@ import classnames from 'classnames';
 
 import Cross from '../../assets/icons/cross.svg';
 import Refresh from '../../assets/icons/refresh.svg';
-import styles from './styles.sass';
+import styles from './styles.module.css';
 
 const { ipcRenderer } = window.require('electron');
 
