@@ -44,6 +44,7 @@
     "eslint-plugin-import": "^2.30.0",
     "eslint-plugin-jsx-a11y": "^6.10.0",
     "eslint-plugin-react": "^7.36.1",
+    "fs-extra": "^11.3.0",
     "html-webpack-plugin": "^5.6.0",
     "sass": "^1.77.8",
     "sass-loader": "^16.0.1",
@@ -56,6 +57,7 @@
     "webpack-dev-server": "^5.0.4"
   },
   "build": {
+    "beforeBuild": "./clean-dist.js",
     "mac": {
       "extendInfo": {
         "NSUserNotificationAlertStyle": "alert"
