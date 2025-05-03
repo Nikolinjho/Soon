@@ -59,6 +59,7 @@
   "build": {
     "beforeBuild": "./clean-dist.js",
     "mac": {
+      "target": ["dmg", "zip"],
       "extendInfo": {
         "NSUserNotificationAlertStyle": "alert"
       }
@@ -69,7 +70,7 @@
     ],
     "dmg": {
       "title": "${productName}",
-      "icon": "disk.icns"
+      "icon": "build/icon.icns"
     }
   }
 }
