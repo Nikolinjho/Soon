@@ -138,7 +138,7 @@ class AddReminder extends React.Component {
           onChange={this.handleInputChange}
           onKeyUp={this.focusNextField}
           placeholder="Что напомнить?"
-          maxLength={50}
+          maxLength={150}
         />
         <div className={styles.separator} />
         <input
