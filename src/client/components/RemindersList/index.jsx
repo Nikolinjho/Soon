@@ -184,15 +184,35 @@ class RemindersList extends React.Component {
                   padding: '1px 10px',
                   borderRadius: '5px',
                   maxWidth: '320px',
+                  userSelect: 'text',
                   ...this.tippyTheme(darkMode ? 'dark' : '')
                 }}
                 >
                   {`[${this.getTime(reminder.timeStamp)}] - ${reminder.message}`}
                 </div>
               )}
-              followCursor
-              plugins={[followCursor]}
+              interactive={true}
+              appendTo={document.body}
               duration={0}
+              popperOptions={
+                {
+                  strategy: 'fixed',
+                  modifiers: [
+                    {
+                      name: 'flip',
+                      options: {
+                        fallbackPlacements: ['bottom', 'right'],
+                      },
+                    },
+                    {
+                      name: 'preventOverflow',
+                      options: {
+                        altAxis: true,
+                      },
+                    },
+                  ]
+                }
+              }
             >
               <div className={styles.message}>
                 {
