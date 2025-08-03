@@ -2,13 +2,14 @@ import React from 'react';
 import classnames from 'classnames';
 import AddReminder from '../AddReminder';
 import RemindersList from '../RemindersList';
+import { getRenderer, isElectron } from '../../utils/get-renderer';
 
 import Back from '../../assets/icons/back.svg';
 import MoreIcon from '../../assets/icons/more.svg';
 
 import styles from './styles.module.css';
 
-const { ipcRenderer } = window.require('electron');
+const ipcRenderer = getRenderer();
 
 class App extends React.Component {
   constructor() {
@@ -16,11 +17,23 @@ class App extends React.Component {
     this.state = {
       showList: false,
       darkMode: false,
+      /**
+       * @type {{ id: number, message: string, isExpired: boolean, timeStamp: string }[]}
+       */
       reminders: [],
     };
   }
 
   componentDidMount() {
+    if (!isElectron()) {
+      // Browser environment - add some mock data for development
+      this.updateList([
+        { id: 1, message: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. ', isExpired: false },
+        { id: 2, message: 'Sample reminder 2', isExpired: true },
+      ]);
+      return;
+    }
+
     ipcRenderer.on('NOTIFICATION_ADDED', (event, args) => {
       this.updateList(args);
     });
@@ -41,6 +54,8 @@ class App extends React.Component {
   }
 
   componentWillUnmount() {
+    if (!isElectron()) return;
+
     ipcRenderer.removeListener('NOTIFICATION_ADDED', (event, args) => {
       this.updateList(args);
     });
@@ -76,8 +91,22 @@ class App extends React.Component {
     }));
   }
 
-  deleteItem = (id) => {
+    deleteItem = (id) => {
     const { reminders } = this.state;
+
+    if (!isElectron()) {
+      // Browser environment - just remove from local state
+      if (id === 'all') {
+        this.setState({ reminders: [] });
+      } else if (id === 'expired') {
+        this.setState({ reminders: reminders.filter(item => !item.isExpired) });
+      } else {
+        const newReminders = reminders.filter((_, index) => index !== reminders.length - 1 - id);
+        this.setState({ reminders: newReminders });
+      }
+      return;
+    }
+
     if (id === 'all' || id === 'expired') {
       ipcRenderer.send('DELETE_ITEM', id);
     } else {

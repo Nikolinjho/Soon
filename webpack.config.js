@@ -1,6 +1,7 @@
 import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { fileURLToPath } from 'url';
+import webpack from 'webpack';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isProduction = process.env.NODE_ENV === 'production';
@@ -101,10 +102,10 @@ export default {
       directory: path.join(__dirname, 'public'),
     },
     devMiddleware: {
-      writeToDisk: true,
+      writeToDisk: false,
     },
   },
-  target: 'electron-renderer',
+  target: process.env.NODE_ENV === 'production' ? 'electron-renderer' : 'web',
   plugins: [
     new HtmlWebpackPlugin({
       template: './public/index.html',
@@ -118,6 +119,12 @@ export default {
           }
         : false,
     }),
+    // Provide global object for browser environment in development
+    ...(isProduction ? [] : [
+      new webpack.DefinePlugin({
+        global: 'globalThis',
+      }),
+    ]),
   ],
   optimization: {
     minimize: isProduction,

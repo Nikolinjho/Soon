@@ -4,12 +4,13 @@ import PropTypes from 'prop-types';
 import Tippy from '@tippyjs/react';
 import { followCursor } from 'tippy.js';
 import classnames from 'classnames';
+import { getRenderer, isElectron } from '../../utils/get-renderer';
 
 import Cross from '../../assets/icons/cross.svg';
 import Refresh from '../../assets/icons/refresh.svg';
 import styles from './styles.module.css';
 
-const { ipcRenderer } = window.require('electron');
+const ipcRenderer = getRenderer();
 
 class RemindersList extends React.Component {
   constructor() {
@@ -24,6 +25,8 @@ class RemindersList extends React.Component {
   }
 
   componentDidMount() {
+    if (!isElectron()) return;
+
     ipcRenderer.on('REPEAT_FAILED', () => {
       this.setShake();
     });
@@ -42,6 +45,8 @@ class RemindersList extends React.Component {
   }
 
   componentWillUnmount() {
+    if (!isElectron()) return;
+
     ipcRenderer.removeListener('REPEAT_FAILED', () => {
       this.setShake();
     });
@@ -80,6 +85,12 @@ class RemindersList extends React.Component {
     const { selectedId } = this.state;
 
     if (e.keyCode === 13 && value.length) {
+      if (!isElectron()) {
+        // Browser environment - just close the input
+        this.setState({ selectedId: -1 });
+        return;
+      }
+
       ipcRenderer.send('REPEAT_REMINDER', {
         id: selectedId,
         time: value,

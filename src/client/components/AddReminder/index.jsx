@@ -1,10 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { getRenderer, isElectron } from '../../utils/get-renderer';
 
 import styles from './styles.module.css';
 
-const { ipcRenderer } = window.require('electron');
+const ipcRenderer = getRenderer();
 
 class AddReminder extends React.Component {
   constructor() {
@@ -23,15 +24,24 @@ class AddReminder extends React.Component {
   }
 
   componentDidMount() {
+    if (!isElectron()) {
+      // Browser environment - just focus the input
+      this.messageInputRef.current.focus();
+      return;
+    }
+
     ipcRenderer.on('NOTIFICATION_ADDED', this.notificationAdded);
     ipcRenderer.on('NOTIFICATION_FAILED', this.notificationFailed);
     ipcRenderer.on('WINDOW_VISIBLE', this.onWindowVisible);
     this.messageInputRef.current.focus();
   }
 
-  componentWillUnmount() {
+    componentWillUnmount() {
     clearTimeout(this.statusMessageTimeout);
     clearTimeout(this.shakeTimeout);
+
+    if (!isElectron()) return;
+
     ipcRenderer.removeListener('NOTIFICATION_ADDED', this.notificationAdded);
     ipcRenderer.removeListener('NOTIFICATION_FAILED', this.notificationFailed);
     ipcRenderer.removeListener('WINDOW_VISIBLE', this.onWindowVisible);
@@ -98,6 +108,12 @@ class AddReminder extends React.Component {
   addNotification = (e) => {
     if (e.keyCode === 13 && this.timeInputRef.current.value.length) {
       const { message, time } = this.state;
+
+      if (!isElectron()) {
+        // Browser environment - just show a success message
+        this.notificationAdded();
+        return;
+      }
 
       ipcRenderer.send('ADD_REMINDER', {
         message,
