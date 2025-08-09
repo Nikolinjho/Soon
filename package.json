@@ -72,7 +72,27 @@
     ],
     "dmg": {
       "title": "${productName}",
-      "icon": "build/icon.icns"
+      "icon": "build/icon.icns", // Path to the DMG window icon (macOS .icns format)
+      "format": "UDBZ", // DMG file format (UDBZ is a compressed image)
+      "window": {
+        "width": 540, // Width of the DMG window in pixels
+        "height": 380 // Height of the DMG window in pixels
+      },
+      "contents": [
+        {
+          "x": 140,
+          "y": 200
+        }, // The app icon will be placed at these coordinates in the DMG window
+        {
+          "x": 380,
+          "y": 200,
+          "type": "link",
+          "path": "/Applications"
+        } // A shortcut to the Applications folder, placed at these coordinates, so users can drag the app to install
+      ]
+    },
+    "directories": {
+      "output": "dist"
     }
   }
 }
