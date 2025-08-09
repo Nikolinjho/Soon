@@ -25,7 +25,7 @@ class NotificationHandler {
 
   welcomeMessage = () => {
     const options = {
-      title: 'Welcome to Soon!',
+      title: 'Добро пожаловать в Soon!',
     };
 
     new Notification(options).show();
@@ -60,7 +60,7 @@ class NotificationHandler {
           this.store.set('notifications', this.notifications);
 
           const options = {
-            title: 'Soon is now!',
+            title: 'Скоро настало!',
             body: message,
           };
 
