@@ -1,6 +1,6 @@
 import React from 'react';
 import classnames from 'classnames';
-import AddReminder from '../AddReminder';
+import { AddReminder } from '../AddReminder';
 import RemindersList from '../RemindersList';
 import { getRenderer, isElectron } from '../../utils/get-renderer';
 
