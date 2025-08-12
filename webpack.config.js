@@ -86,7 +86,7 @@ export default {
     fullySpecified: false
   },
   devServer: {
-    port: 3000,
+    port: 3001,
     open: false,
     allowedHosts: 'all',
     historyApiFallback: true,
