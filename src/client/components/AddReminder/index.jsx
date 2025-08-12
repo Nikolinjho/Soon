@@ -125,12 +125,24 @@ function AddReminder({ darkMode }) {
     };
   }, [notificationAdded, notificationFailed, onWindowVisible]);
 
+  const containerClass = classnames(
+    styles.addReminder,
+    darkMode ? styles.darkMode : ''
+  );
+
+  const timeInputClass = classnames(
+    styles.timeInput,
+    shake ? styles.shake : ''
+  );
+
+  const isStatusMessageVisible = statusMessage.length > 0;
+  const statusMessageClass = classnames(
+    styles.statusMessage,
+    isStatusMessageVisible ? styles.enter : ''
+  );
+
   return (
-    <div className={classnames(
-      styles.addReminder,
-      darkMode ? styles.darkMode : ''
-    )}
-    >
+    <div className={containerClass}>
       <input
         ref={messageInputRef}
         name="message"
@@ -142,21 +154,13 @@ function AddReminder({ darkMode }) {
       <div className={styles.separator} />
       <input
         ref={timeInputRef}
-        className={classnames(
-          styles.timeInput,
-          shake ? styles.shake : ''
-        )}
+        className={timeInputClass}
         name="time"
         onChange={handleInputChange}
         onKeyUp={addNotification}
         placeholder="Когда?"
       />
-      <span
-        className={classnames(
-          styles.statusMessage,
-          statusMessage.length ? styles.enter : '',
-        )}
-      >
+      <span className={statusMessageClass}>
         {statusMessage}
       </span>
     </div>
