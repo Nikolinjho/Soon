@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useContext, createContext } from 'react';
 import classnames from 'classnames';
 import { AddReminder } from '../AddReminder';
-import RemindersList from '../RemindersList';
+import { RemindersList } from '../RemindersList';
 import { getRenderer, isElectron } from '../../utils/get-renderer';
 
 import Back from '../../assets/icons/back.svg';

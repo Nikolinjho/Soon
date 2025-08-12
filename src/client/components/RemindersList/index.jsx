@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-import React from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import Tippy from '@tippyjs/react';
 import { followCursor } from 'tippy.js';
@@ -12,82 +12,60 @@ import styles from './styles.module.css';
 
 const ipcRenderer = getRenderer();
 
-class RemindersList extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      selectedId: -1,
-      shake: false,
-    };
+/**
+ * RemindersList component for displaying and managing reminders
+ * @param {Object} props - Component props
+ * @param {Array} props.reminders - Array of reminder objects
+ * @param {Function} props.deleteItem - Function to delete a reminder
+ * @param {boolean} props.darkMode - Whether dark mode is enabled
+ */
+function RemindersList({ reminders, deleteItem, darkMode }) {
+  // State hooks
+  const [selectedId, setSelectedId] = useState(-1);
+  const [isShaking, setIsShaking] = useState(false);
 
-    this.repeatWhen = React.createRef();
-    this.shakeTimeout = null;
-  }
+  // Ref hooks
+  const repeatWhenRef = useRef(null);
+  const shakeTimeoutRef = useRef(null);
 
-  componentDidMount() {
-    if (!isElectron()) return;
-
-    ipcRenderer.on('REPEAT_FAILED', () => {
-      this.setShake();
-    });
-
-    ipcRenderer.on('NOTIFICATION_ADDED', () => {
-      this.setState({ selectedId: -1 });
-    });
-  }
-
-  componentDidUpdate() {
-    const { selectedId } = this.state;
-
-    if (selectedId !== -1) {
-      this.repeatWhen.current.focus();
+  // Helper functions
+  const setShake = useCallback(() => {
+    if (!shakeTimeoutRef.current) {
+      setIsShaking(true);
+      clearShake();
     }
-  }
+  }, []);
 
-  componentWillUnmount() {
-    if (!isElectron()) return;
-
-    ipcRenderer.removeListener('REPEAT_FAILED', () => {
-      this.setShake();
-    });
-
-    ipcRenderer.removeListener('NOTIFICATION_ADDED', () => {
-      this.setState({ selectedId: -1 });
-    });
-  }
-
-  setShake = () => {
-    if (!this.shakeTimeout) {
-      this.setState({
-        shake: true
-      }, this.clearShake);
-    }
-  }
-
-  clearShake = () => {
-    this.shakeTimeout = setTimeout(() => {
-      this.setState({
-        shake: false,
-      });
-      this.shakeTimeout = null;
+  const clearShake = useCallback(() => {
+    shakeTimeoutRef.current = setTimeout(() => {
+      setIsShaking(false);
+      shakeTimeoutRef.current = null;
     }, 500);
-  }
+  }, []);
 
-  onRepeatChange = () => {
-    const { shake } = this.state;
-    if (shake) {
-      this.setState({ shake: false });
+  const handleRepeatFailed = useCallback(() => {
+    setShake();
+  }, [setShake]);
+
+  const handleNotificationAdded = useCallback(() => {
+    setSelectedId(-1);
+  }, []);
+
+  const onRepeatChange = useCallback(() => {
+    if (isShaking) {
+      setIsShaking(false);
     }
-  };
+  }, [isShaking]);
 
-  onRepeatSubmit = (e) => {
-    const { value } = this.repeatWhen.current;
-    const { selectedId } = this.state;
+  const onRepeatSubmit = useCallback((e) => {
+    const value = repeatWhenRef.current?.value;
+    const isEnterPressed = e.keyCode === 13;
+    const isValueNotEmpty = value && value.length > 0;
 
-    if (e.keyCode === 13 && value.length) {
+    if (isEnterPressed && isValueNotEmpty) {
       if (!isElectron()) {
         // Browser environment - just close the input
-        this.setState({ selectedId: -1 });
+        setSelectedId(-1);
         return;
       }
 
@@ -96,22 +74,23 @@ class RemindersList extends React.Component {
         time: value,
       });
     }
-  };
+  }, [selectedId]);
 
-  toggleSelectedId = (e, id) => {
+  const toggleSelectedId = useCallback((e, id) => {
     e.preventDefault();
-    const { selectedId } = this.state;
 
-    if (e.button === 0) {
-      if (selectedId === -1) {
-        this.setState({ selectedId: id });
+    const isLeftClick = e.button === 0;
+    if (isLeftClick) {
+      const isCurrentlySelected = selectedId === -1;
+      if (isCurrentlySelected) {
+        setSelectedId(id);
       } else {
-        this.setState({ selectedId: -1 });
+        setSelectedId(-1);
       }
     }
-  }
+  }, [selectedId]);
 
-  getTime = (timeStamp) => {
+  const getTime = useCallback((timeStamp) => {
     const date = new Date(timeStamp);
     let hours = date.getHours();
     let minutes = date.getMinutes();
@@ -120,46 +99,80 @@ class RemindersList extends React.Component {
     hours = /^\d$/.test(hours) ? `0${hours}` : hours;
 
     return `${hours}:${minutes}`;
-  };
+  }, []);
 
-  tippyTheme = (theme) => {
-    if (theme === 'dark') {
-      return (
-        {
-          backgroundColor: 'black',
-          boxShadow: '0px 3px 22px 0px rgba(20,20,20,1)',
-          color: 'white'
-        }
-      );
+  const getTippyTheme = useCallback((isDarkTheme) => {
+    if (isDarkTheme) {
+      return {
+        backgroundColor: 'black',
+        boxShadow: '0px 3px 22px 0px rgba(20,20,20,1)',
+        color: 'white'
+      };
     }
-    return (
-      {
-        backgroundColor: 'white',
-        boxShadow: '0px 3px 22px 0px rgba(184,184,184,1)',
-        color: 'black'
+    return {
+      backgroundColor: 'white',
+      boxShadow: '0px 3px 22px 0px rgba(184,184,184,1)',
+      color: 'black'
+    };
+  }, []);
+
+  const handleInputBlur = useCallback(() => {
+    setSelectedId(-1);
+  }, []);
+
+  // Effect for component mount/unmount (IPC listeners)
+  useEffect(() => {
+    if (!isElectron()) return;
+
+    ipcRenderer.on('REPEAT_FAILED', handleRepeatFailed);
+    ipcRenderer.on('NOTIFICATION_ADDED', handleNotificationAdded);
+
+    return () => {
+      ipcRenderer.removeListener('REPEAT_FAILED', handleRepeatFailed);
+      ipcRenderer.removeListener('NOTIFICATION_ADDED', handleNotificationAdded);
+    };
+  }, [handleRepeatFailed, handleNotificationAdded]);
+
+  // Effect for focus management when selectedId changes
+  useEffect(() => {
+    const isItemSelected = selectedId !== -1;
+    if (isItemSelected && repeatWhenRef.current) {
+      repeatWhenRef.current.focus();
+    }
+  }, [selectedId]);
+
+  // Effect for cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (shakeTimeoutRef.current) {
+        clearTimeout(shakeTimeoutRef.current);
       }
-    );
-  };
+    };
+  }, []);
 
-  renderReminders = () => {
-    const {
-      reminders,
-      deleteItem,
-      darkMode,
-    } = this.props;
+  const renderReminders = () => {
+    const isRemindersExist = reminders.length > 0;
 
-    const { selectedId, shake } = this.state;
+    if (isRemindersExist) {
+      return reminders.slice(0).reverse().map((reminder, id) => {
+        const isReminderExpired = reminder.isExpired;
+        const isCurrentSelected = selectedId === id;
+        const isReminderSelected = selectedId !== id;
 
-    if (reminders.length) {
-      return (
-        reminders.slice(0).reverse().map((reminder, id) => (
-          <div
-            key={`reminder-${id}`}
-            className={classnames(
-              styles.reminder,
-              reminder.isExpired && styles.expired
-            )}
-          >
+        const reminderClass = classnames(
+          styles.reminder,
+          isReminderExpired && styles.expired
+        );
+
+        const repeatInputClass = classnames(
+          styles.repeatWhen,
+          isShaking ? styles.shake : ''
+        );
+
+        const tippyTheme = getTippyTheme(darkMode);
+
+        return (
+          <div key={`reminder-${id}`} className={reminderClass}>
             <button
               type="button"
               className={styles.delete}
@@ -167,17 +180,15 @@ class RemindersList extends React.Component {
             >
               <Cross />
             </button>
-            {
-              reminder.isExpired && (
-                <button
-                  type="button"
-                  className={styles.refresh}
-                  onMouseDown={(e) => this.toggleSelectedId(e, id)}
-                >
-                  <Refresh />
-                </button>
-              )
-            }
+            {isReminderExpired && (
+              <button
+                type="button"
+                className={styles.refresh}
+                onMouseDown={(e) => toggleSelectedId(e, id)}
+              >
+                <Refresh />
+              </button>
+            )}
             <Tippy
               content={(
                 <div style={{
@@ -185,58 +196,51 @@ class RemindersList extends React.Component {
                   borderRadius: '5px',
                   maxWidth: '320px',
                   userSelect: 'text',
-                  ...this.tippyTheme(darkMode ? 'dark' : '')
+                  ...tippyTheme
                 }}
                 >
-                  {`[${this.getTime(reminder.timeStamp)}] - ${reminder.message}`}
+                  {`[${getTime(reminder.timeStamp)}] - ${reminder.message}`}
                 </div>
               )}
               interactive={true}
               appendTo={document.body}
               duration={0}
-              popperOptions={
-                {
-                  strategy: 'fixed',
-                  modifiers: [
-                    {
-                      name: 'flip',
-                      options: {
-                        fallbackPlacements: ['bottom', 'right'],
-                      },
+              popperOptions={{
+                strategy: 'fixed',
+                modifiers: [
+                  {
+                    name: 'flip',
+                    options: {
+                      fallbackPlacements: ['bottom', 'right'],
                     },
-                    {
-                      name: 'preventOverflow',
-                      options: {
-                        altAxis: true,
-                      },
+                  },
+                  {
+                    name: 'preventOverflow',
+                    options: {
+                      altAxis: true,
                     },
-                  ]
-                }
-              }
+                  },
+                ]
+              }}
             >
               <div className={styles.message}>
-                {
-                  selectedId !== id
-                    ? <span>{reminder.message}</span>
-                    : (
-                      <input
-                        ref={this.repeatWhen}
-                        placeholder="Когда повторить?"
-                        className={classnames(
-                          styles.repeatWhen,
-                          shake ? styles.shake : ''
-                        )}
-                        onBlur={() => this.setState({ selectedId: -1 })}
-                        onKeyUp={this.onRepeatSubmit}
-                        onChange={this.onRepeatChange}
-                      />
-                    )
-                }
+                {isReminderSelected ? (
+                  <span>{reminder.message}</span>
+                ) : (
+                  <input
+                    ref={repeatWhenRef}
+                    placeholder="Когда повторить?"
+                    className={repeatInputClass}
+                    onBlur={handleInputBlur}
+                    onKeyUp={onRepeatSubmit}
+                    onChange={onRepeatChange}
+                  />
+                )}
               </div>
             </Tippy>
           </div>
-        ))
-      );
+        );
+      });
     }
 
     return (
@@ -246,21 +250,18 @@ class RemindersList extends React.Component {
     );
   };
 
-  render() {
-    const { reminders, darkMode } = this.props;
+  const isRemindersExist = reminders.length > 0;
+  const containerClass = classnames(
+    styles.remindersList,
+    !isRemindersExist ? styles.noReminder : '',
+    darkMode ? styles.darkMode : ''
+  );
 
-    return (
-      <div
-        className={classnames(
-          styles.remindersList,
-          !reminders.length ? styles.noReminder : '',
-          darkMode ? styles.darkMode : '',
-        )}
-      >
-        {this.renderReminders()}
-      </div>
-    );
-  }
+  return (
+    <div className={containerClass}>
+      {renderReminders()}
+    </div>
+  );
 }
 
 RemindersList.propTypes = {
@@ -269,4 +270,4 @@ RemindersList.propTypes = {
   darkMode: PropTypes.bool.isRequired,
 };
 
-export default RemindersList;
+export { RemindersList };
